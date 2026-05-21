@@ -150,7 +150,7 @@
     /* FOOTER & SYNC */
     .sync-footer {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 4px;
     }
     .code-box { font-family: monospace; font-size: 1.15rem; font-weight: 700; color: var(--yellow); letter-spacing: 2px; background: var(--card2); padding: 5px 14px; border-radius: 7px; border: 1px solid var(--line2); min-width: 90px; text-align: center; }
     .btn-action { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 7px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: opacity 0.2s; }
@@ -182,9 +182,9 @@
 </header>
 
 <div class="title-panel">
-  <div class="panel-title">🎬 Quản lý Video Hiện Tại</div>
+  <div class="panel-title">🎬 Tên Video Đang Thực Hiện</div>
   <div class="input-group">
-    <input type="text" id="video-title-input" class="input-txt" placeholder="Nhập tên/tiêu đề bài viết cần edit hôm nay..." oninput="updateVideoTitle(this.value)" />
+    <input type="text" id="video-title-input" class="input-txt" placeholder="Nhập tiêu đề hoặc mã số video hôm nay vào đây..." oninput="updateVideoTitle(this.value)" />
   </div>
 </div>
 
@@ -270,13 +270,13 @@
 
 <div class="sync-footer">
   <div>
-    <h4 style="font-size:0.82rem; font-weight:700; margin-bottom:2px;">🔌 Kết Nối Thiết Bị Hai Màn Hình (Màn Chính & Phụ)</h4>
-    <p style="font-size:0.74rem; color:var(--muted);">Đồng bộ hóa trạng thái tiến độ thời gian thực sang Bảng Phụ Mini.</p>
+    <h4 style="font-size:0.82rem; font-weight:700; margin-bottom:2px;">🔌 Thiết Lập Hai Màn Hình (Màn Chính & Phụ)</h4>
+    <p style="font-size:0.74rem; color:var(--muted);">Đồng bộ tiến độ công việc và tên video sang một cửa sổ thu nhỏ biệt lập.</p>
   </div>
   <div style="display:flex; align-items:center; gap:10px;">
-    <button class="btn-reset" onclick="generateCode()" style="background:var(--line); border-color:var(--line2); color:var(--text)">Tạo Mã Code</button>
+    <button class="btn-reset" onclick="generateCode()" style="background:var(--line); border-color:var(--line2); color:var(--text)">Tạo Mã</button>
     <div class="code-box" id="code-box">-----</div>
-    <button class="btn-action" onclick="openMiniPanel()" style="background:var(--purple)">Mở Bảng Nhỏ</button>
+    <button class="btn-action" onclick="openMiniPanel()" style="background:var(--purple)">Mở Cửa Sổ</button>
   </div>
 </div>
 
@@ -284,7 +284,7 @@
   let miniWindow = null;
   let currentVideoTitle = "";
 
-  // Khởi tạo xóa mã cũ khi reload tab chính
+  // Reset mã cũ khi load lại trang
   localStorage.removeItem('vflow_sync_code');
 
   function updateVideoTitle(val) {
@@ -363,7 +363,7 @@
     if(miniWindow && !miniWindow.closed) { miniWindow.postMessage({ action: 'LOCK' }, '*'); }
   }
 
-  // folder watcher
+  // Folder Watcher
   let dirHandle=null, watchInterval=null, knownFiles=new Set(), watching=false;
 
   async function selectFolder() {
@@ -412,27 +412,26 @@
     }
   }
 
-  // Lắng nghe tương tác từ màn hình phụ đẩy ngược về màn hình chính
+  // Đón nhận dữ liệu tương tác từ Màn hình phụ bắn ngược về
   window.addEventListener('message', function(e) {
     if (e.data.action === 'MINI_TOGGLE_STEP') { toggleStep(e.data.num); }
     if (e.data.action === 'MINI_TOGGLE_SUB') { toggleSub(e.data.id); }
     if (e.data.action === 'REQUEST_INITIAL_SYNC') { sendStateToMini(); }
   });
 
+  // Mở cửa sổ phụ an toàn
   function openMiniPanel() {
-    const w = 420, h = 580;
+    const w = 420, h = 590;
     const left = (screen.width/2) - (w/2);
     const top = (screen.height/2) - (h/2);
     miniWindow = window.open("", "VideoFlowMiniPanel", `width=${w},height=${h},top=${top},left=${left},resizable=yes`);
     
-    const doc = miniWindow.document;
-    doc.open();
-    doc.write(\`
+    const miniHTML = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>Bảng Phụ Màn 2</title>
+        <title>Bảng Phụ Mini</title>
         <style>
           body { background: #0c0f17; color: #dde2f0; font-family: sans-serif; padding: 14px; margin:0; }
           .lock-screen { text-align:center; padding: 60px 10px; }
@@ -446,20 +445,21 @@
           .card-item.done .box-click, .sub-item.done .box-click { background: #34d399; border-color: #34d399; }
           .card-item.done .box-click::after, .sub-item.done .box-click::after { content: "✓"; color: #fff; font-weight: bold; }
           .sub-item { background: #161b26; border: 1px solid #232c3f; padding: 8px 12px; border-radius: 6px; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; margin-top: 4px; }
+          .sub-item.done { opacity: 0.4; }
           .popup-alert { background: #10b981; color: white; padding: 10px; border-radius: 8px; margin-top: 12px; text-align: center; font-weight: bold; display: none; }
         </style>
       </head>
       <body>
         <div id="lock" class="lock-screen">
-          <h3 style="color:#fbbf24; margin-bottom:8px;">🔑 Nhập Mã Khóa Kết Nối Màn 2</h3>
-          <p style="font-size:0.8rem; color:#606880; margin-bottom:20px;">Lấy mã số ở dưới cùng giao diện Màn chính</p>
+          <h3 style="color:#fbbf24; margin-bottom:8px;">🔑 Mã Kết Nối Màn Hình Phụ</h3>
+          <p style="font-size:0.8rem; color:#606880; margin-bottom:20px;">Nhấp nút "Tạo Mã" ở dưới cùng màn hình chính để lấy</p>
           <input type="text" id="passcode" class="code-input" placeholder="00000" maxlength="5" />
-          <button class="btn-join" onclick="checkAuth()">Xác Nhận Kích Hoạt</button>
+          <button class="btn-join" onclick="checkAuth()">Đồng Bộ Giao Diện</button>
         </div>
 
         <div id="app" class="main-app">
           <div class="top-bar">
-            <div style="font-weight:bold; color:#4f8ef7; font-size:0.9rem;">🖥 BẢNG PHỤ ĐIỀU KHIỂN (MÀN 2)</div>
+            <div style="font-weight:bold; color:#4f8ef7; font-size:0.9rem;">🖥 BẢNG PHỤ ĐIỀU KHIỂN CONTROLLER</div>
             <div id="mini-title" style="color:#fbbf24; font-size:0.8rem; font-weight:bold; margin-top:4px; min-height:16px;"></div>
           </div>
           <div class="card-item" id="m1"><span>01. Tìm kiếm video</span><div class="box-click" onclick="callParentToggle(1)"></div></div>
@@ -509,7 +509,7 @@
               document.getElementById('app').style.display = 'block';
               window.opener.postMessage({ action: 'REQUEST_INITIAL_SYNC' }, '*');
             } else {
-              alert('Mã không đúng! Vui lòng tạo mã mới ở dưới cùng Màn hình chính.');
+              alert('Mã kết nối không chính xác! Hãy kiểm tra hoặc tạo mã mới.');
             }
           }
 
@@ -518,8 +518,11 @@
         </script>
       </body>
       </html>
-    \`);
-    doc.close();
+    `;
+    
+    miniWindow.document.open();
+    miniWindow.document.write(miniHTML);
+    miniWindow.document.close();
   }
 </script>
 </body>

@@ -96,7 +96,7 @@
     .workspace { display: flex; flex-direction: column; gap: 12px; opacity: 0.3; pointer-events: none; transition: opacity 0.3s; }
     .workspace.active { opacity: 1; pointer-events: auto; }
 
-    /* FOLDER CARD (TOP) */
+    /* FOLDER CARD */
     .folder-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
     .folder-row { display: flex; gap: 8px; align-items: center; }
     .folder-path {
@@ -105,7 +105,7 @@
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     
-    /* STEPS LAYOUT (CHECKBOX RIGHT) */
+    /* STEPS LAYOUT */
     .steps { display: flex; flex-direction: column; gap: 8px; }
     .step-card {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
@@ -136,7 +136,7 @@
     .step-card.done .cb { background: var(--sc); border-color: var(--sc); }
     .step-card.done .cb svg { display: block; }
 
-    /* Sub-steps Right Layout */
+    /* Sub-steps Layout */
     .subs { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; width: 100%; }
     .sub { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 6px; background: var(--card2); border: 1px solid var(--line); }
     .sub.done { border-color: color-mix(in srgb, var(--sc) 20%, var(--line)); }
@@ -148,7 +148,7 @@
     .sub.done .sub-cb { background: var(--sc); border-color: var(--sc); }
     .sub.done .sub-cb svg { display: block; }
 
-    /* CODES & FOOTER */
+    /* FOOTER CODES */
     .sync-footer {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px;
       display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
@@ -275,7 +275,7 @@
 
 <div class="sync-footer">
   <div>
-    <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:2px;">🔌 Kết Nối Thiết Bị Hai Màn Hình (Màn Chính & Phụ)</h4>
+    <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:2px;">🔌 Kết Nối Thiết Bị Hai Mân Hình (Màn Chính & Phụ)</h4>
     <p style="font-size:0.75rem; color:var(--muted);">Tạo mã 5 số ngẫu nhiên để đồng bộ hóa trạng thái công việc sang Bảng Phụ Mini.</p>
   </div>
   <div style="display:flex; align-items:center; gap:12px;">
@@ -297,26 +297,17 @@
   
   let dirHandle = null, watchInterval = null, knownFiles = new Set(), watching = false;
 
-  // Giả lập hiệu ứng âm thanh Ting Ting tiền vào tài khoản trực tiếp từ API âm thanh Web
   function playTingSound() {
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const now = ctx.currentTime;
-      
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
       osc1.type = 'sine'; osc1.frequency.setValueAtTime(1400, now);
       gain1.gain.setValueAtTime(0.25, now); gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
       osc1.connect(gain1); gain1.connect(ctx.destination);
       osc1.start(now); osc1.stop(now + 0.3);
-
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.type = 'sine'; osc2.frequency.setValueAtTime(1750, now + 0.07);
-      gain2.gain.setValueAtTime(0.35, now + 0.07); gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      osc2.connect(gain2); gain2.connect(ctx.destination);
-      osc2.start(now + 0.07); osc2.stop(now + 0.5);
-    } catch(e) { console.error("Audio Context error: ", e); }
+    } catch(e) { console.error(e); }
   }
 
   function startNewVideo() {
@@ -343,7 +334,6 @@
     const timeStr = `${mm}:${ss}`;
     document.getElementById('time-elapsed').textContent = timeStr;
     
-    // Đồng bộ thời gian thực sang bảng phụ
     if(miniWindow && !miniWindow.closed) {
       try {
         const miniTimer = miniWindow.document.getElementById('mini-timer');
@@ -427,15 +417,14 @@
     sendStateToMini();
   }
 
-  // File system API watcher
   async function selectFolder() {
-    if (!window.showDirectoryPicker) { alert('Vui lòng chạy ứng dụng trên Google Chrome hoặc Microsoft Edge để kích hoạt tính năng đọc thư mục.'); return; }
+    if (!window.showDirectoryPicker) { alert('Vui lòng dùng Chrome hoặc Edge.'); return; }
     try {
       dirHandle = await window.showDirectoryPicker({ mode:'read' });
       document.getElementById('folder-path').textContent = "🔍 Thư mục: " + dirHandle.name;
       document.getElementById('btn-watch').style.display = 'inline-block';
       knownFiles = await scanFiles(dirHandle);
-    } catch(e) { if(e.name!=='AbortError') alert('Lỗi truy cập hệ thống file: '+e.message); }
+    } catch(e) { if(e.name!=='AbortError') alert('Lỗi: '+e.message); }
   }
 
   async function scanFiles(h) {
@@ -464,32 +453,30 @@
   }
 
   function triggerFileAlert(filename) {
-    let textAlert = "📥 Đã tải video gốc"; // Mặc định từ Douyin về
-    const nameLower = filename.toLowerCase();
-    
-    // Nhận diện file từ CapCut xuất bản ra
-    if(nameLower.includes('capcut') || nameLower.includes('export') || nameLower.includes('edit') || nameLower.includes('render')) {
+    let textAlert = "📥 Đã tải video gốc";
+    if(filename.toLowerCase().includes('capcut') || filename.toLowerCase().includes('export')) {
       textAlert = "✨ Đã edit xong video";
     }
-
     if(miniWindow && !miniWindow.closed) {
-      miniWindow.postMessage({
-        action: 'SHOW_NOTIF',
-        msg: textAlert,
-        file: filename
-      }, '*');
+      miniWindow.postMessage({ action: 'SHOW_NOTIF', msg: textAlert, file: filename }, '*');
     }
   }
 
-  // Cross-Window Communication (Đồng bộ Bảng Phụ Màn Hình Chính)
+  function getSyncCode() { return syncCode; }
+
+  function sendStateToMini() {
+    if(miniWindow && !miniWindow.closed) {
+      miniWindow.postMessage({ action: 'SYNC', steps: stepStates, subs: subStates }, '*');
+    }
+  }
+
   function openMiniPanel() {
     const w = 430, h = 570;
     const left = (screen.width/2) - (w/2);
     const top = (screen.height/2) - (h/2);
     
-    miniWindow = window.open("", "VideoFlowMiniPanel", `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=no,status=no`);
+    miniWindow = window.open("", "VideoFlowMiniPanel", `width=${w},height=${h},top=${top},left=${left},resizable=yes`);
     
-    // Viết trực tiếp mã HTML cho bảng phụ một cách an toàn không dính ký tự lạ bọc ngoài
     const doc = miniWindow.document;
     doc.open();
     doc.write(`
@@ -497,149 +484,75 @@
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>Bảng Phụ Checklist</title>
+        <title>Bảng Phụ Mini</title>
         <style>
           body { background: #0c0f17; color: #dde2f0; font-family: sans-serif; padding: 14px; margin:0; }
           .lock-screen { text-align:center; padding: 40px 10px; }
-          .code-input { width: 80%; padding: 10px; text-align: center; background: #161b26; border: 1px solid #2b354a; color: #fff; font-size: 1.3rem; font-family: monospace; border-radius: 6px; margin-bottom: 12px; }
-          .btn-join { background: #4f8ef7; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 85%; font-size: 0.9rem; }
+          .code-input { width: 80%; padding: 10px; text-align: center; background: #161b26; border: 1px solid #2b354a; color: #fff; font-size: 1.3rem; border-radius: 6px; margin-bottom: 12px; }
+          .btn-join { background: #4f8ef7; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 85%; }
           .main-app { display: none; }
           .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e2433; padding-bottom: 10px; margin-bottom: 12px; }
           .card-item { background: #121622; border: 1px solid #1e2433; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-          .card-item.done { opacity: 0.4; border-color: #2e3a54; }
-          .title-text { font-size: 0.88rem; font-weight: bold; }
+          .card-item.done { opacity: 0.4; }
           .box-click { width: 22px; height: 22px; border: 1px solid #353d54; background: #1a2030; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-          .box-click::after { content: "✓"; color: #fff; display: none; font-weight: bold; font-size: 0.8rem; }
-          .card-item.done .box-click { background: #34d399; border-color: #34d399; }
-          .card-item.done .box-click::after { display: block; }
+          .card-item.done .box-click, .sub-item.done .box-click { background: #34d399; border-color: #34d399; }
+          .card-item.done .box-click::after, .sub-item.done .box-click::after { content: "✓"; color: #fff; font-weight: bold; }
           .sub-item { background: #161b26; border: 1px solid #232c3f; padding: 8px 12px; border-radius: 6px; margin-left: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; margin-top: 4px; }
-          .sub-item.done .box-click { background: #f472b6; border-color: #f472b6; }
-          .sub-item.done .box-click::after { display: block; }
-          .lnk-btn { font-size: 0.72rem; color: #4f8ef7; text-decoration: none; background: rgba(79,142,247,0.1); padding: 3px 8px; border-radius: 4px; margin-top: 4px; display: inline-block; }
-          .popup-alert { background: #10b981; color: white; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; font-weight: bold; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: none; }
+          .popup-alert { background: #10b981; color: white; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; font-weight: bold; display: none; }
         </style>
       </head>
       <body>
         <div id="lock" class="lock-screen">
-          <h3 style="font-size:0.95rem; margin-bottom:15px; color:#fbbf24;">🔑 Nhập Mã 5 Số Để Đồng Bộ</h3>
-          <input type="text" id="passcode" class="code-input" placeholder="00000" maxlength="5" />
-          <br/>
+          <h3>🔑 Nhập Mã 5 Số Để Đồng Bộ</h3>
+          <input type="text" id="passcode" class="code-input" maxlength="5" />
           <button class="btn-join" onclick="checkAuth()">Xác Nhận Kết Nối</button>
         </div>
-
         <div id="app" class="main-app">
           <div class="top-bar">
-            <span style="font-size:0.85rem; font-weight:800; color:#4f8ef7;">🖥 BẢNG PHỤ MÀN HÌNH CHÍNH</span>
-            <span id="mini-timer" style="font-family:monospace; color:#fbbf24; font-weight:bold; font-size:0.9rem;">00:00</span>
+            <span style="font-weight:bold; color:#4f8ef7;">🖥 BẢNG PHỤ MINI</span>
+            <span id="mini-timer" style="font-family:monospace; color:#fbbf24; font-weight:bold;">00:00</span>
           </div>
-          
-          <div id="list">
-            <div class="card-item" id="m1">
-              <div>
-                <div class="title-text">01. Tìm kiếm video gốc</div>
-                <a href="javascript:void(0)" class="lnk-btn" onclick="window.opener.open('https://www.douyin.com/jingxuan','_blank')">🌐 Mở Douyin</a>
-              </div>
-              <div class="box-click" onclick="window.opener.toggleStep(1)"></div>
-            </div>
-
-            <div class="card-item" id="m2">
-              <div>
-                <div class="title-text">02. Tách dịch sub cứng</div>
-                <a href="javascript:void(0)" class="lnk-btn" onclick="window.opener.open('https://subtitleextractor.com/dashboard','_blank')">🌐 Mở Extractor</a>
-              </div>
-              <div class="box-click" onclick="window.opener.toggleStep(2)"></div>
-            </div>
-
-            <div class="card-item" id="m3">
-              <div class="title-text">03. Edit hậu kỳ CapCut</div>
-              <div class="box-click" onclick="window.opener.toggleStep(3)"></div>
-            </div>
-
-            <div class="card-item" id="m4">
-              <div class="title-text">04. Sửa Bug & Khớp nhạc nền</div>
-              <div class="box-click" onclick="window.opener.toggleStep(4)"></div>
-            </div>
-
-            <div class="card-item" id="m5" style="margin-bottom:2px; border-radius: 8px 8px 0 0;">
-              <div class="title-text">05. Đăng tải đa nền tảng</div>
-            </div>
-            <div class="sub-item" id="ms-yt">
-              <span>YouTube Shorts</span>
-              <div class="box-click" onclick="window.opener.toggleSub('sub-yt') BLOCK"></div>
-            </div>
-            <div class="sub-item" id="ms-fb">
-              <span>Facebook Reels</span>
-              <div class="box-click" onclick="window.opener.toggleSub('sub-fb')"></div>
-            </div>
-            <div class="sub-item" id="ms-tt">
-              <span>TikTok Video</span>
-              <div class="box-click" onclick="window.opener.toggleSub('sub-tt')"></div>
-            </div>
-          </div>
-
+          <div class="card-item" id="m1"><span>01. Tìm kiếm video</span><div class="box-click" onclick="window.opener.toggleStep(1)"></div></div>
+          <div class="card-item" id="m2"><span>02. Tách dịch sub cứng</span><div class="box-click" onclick="window.opener.toggleStep(2)"></div></div>
+          <div class="card-item" id="m3"><span>03. Edit hậu kỳ CapCut</span><div class="box-click" onclick="window.opener.toggleStep(3)"></div></div>
+          <div class="card-item" id="m4"><span>04. Sửa Bug & Nhạc nền</span><div class="box-click" onclick="window.opener.toggleStep(4)"></div></div>
+          <div class="card-item" id="m5" style="margin-bottom:2px;"><span>05. Đăng tải đa nền tảng</span></div>
+          <div class="sub-item" id="ms-yt"><span>YouTube Shorts</span><div class="box-click" onclick="window.opener.toggleSub('sub-yt')"></div></div>
+          <div class="sub-item" id="ms-fb"><span>Facebook Reels</span><div class="box-click" onclick="window.opener.toggleSub('sub-fb')"></div></div>
+          <div class="sub-item" id="ms-tt"><span>TikTok Video</span><div class="box-click" onclick="window.opener.toggleSub('sub-tt')"></div></div>
           <div id="alertBox" class="popup-alert">
-            <div id="alertMsg">Thông báo hệ thống</div>
-            <div id="alertFile" style="font-size:0.72rem; font-weight:normal; opacity:0.8; margin-top:4px; word-break:break-all;"></div>
+            <div id="alertMsg"></div>
+            <div id="alertFile" style="font-size:0.7rem; font-weight:normal; margin-top:4px;"></div>
           </div>
         </div>
-
         <script>
           window.addEventListener('message', function(e) {
             if(e.data.action === 'SYNC') {
-              const steps = e.data.steps;
-              const subs = e.data.subs;
-              for(let i=1; i<=4; i++) {
-                const el = document.getElementById('m'+i);
-                if(el) el.classList.toggle('done', steps[i]);
-              }
-              const m5 = document.getElementById('m5'); if(m5) m5.classList.toggle('done', steps[5]);
-              
-              document.getElementById('ms-yt').classList.toggle('done', subs['sub-yt']);
-              document.getElementById('ms-fb').classList.toggle('done', subs['sub-fb']);
-              document.getElementById('ms-tt').classList.toggle('done', subs['sub-tt']);
+              for(let i=1; i<=5; i++) { document.getElementById('m'+i)?.classList.toggle('done', e.data.steps[i]); }
+              document.getElementById('ms-yt').classList.toggle('done', e.data.subs['sub-yt']);
+              document.getElementById('ms-fb').classList.toggle('done', e.data.subs['sub-fb']);
+              document.getElementById('ms-tt').classList.toggle('done', e.data.subs['sub-tt']);
             }
-            
             if(e.data.action === 'SHOW_NOTIF') {
               const ab = document.getElementById('alertBox');
               document.getElementById('alertMsg').textContent = e.data.msg;
-              document.getElementById('alertFile').textContent = "Tệp: " + e.data.file;
-              ab.style.display = 'block';
-              window.opener.playTingSound(); // Kích hoạt âm thanh ngân hàng từ cửa sổ mẹ
-              setTimeout(() => { ab.style.display = 'none'; }, 6000);
+              document.getElementById('alertFile').textContent = e.data.file;
+              ab.style.display = 'block'; window.opener.playTingSound();
+              setTimeout(() => { ab.style.display = 'none'; }, 5000);
             }
           });
-
           function checkAuth() {
-            const inputVal = document.getElementById('passcode').value.trim();
-            const correctCode = window.opener.getSyncCode();
-            if(inputVal === correctCode && correctCode !== "") {
+            if(document.getElementById('passcode').value.trim() === window.opener.getSyncCode()) {
               document.getElementById('lock').style.display = 'none';
               document.getElementById('app').style.display = 'block';
               window.opener.sendStateToMini();
-            } else {
-              alert('Mã code không đúng hoặc trang chính đã bấm làm mới reset!');
-            }
+            } else { alert('Mã sai!'); }
           }
-        </script>
+        <\/script>
       </body>
       </html>
     `);
     doc.close();
-  }
-
-  // Hàm phụ hỗ trợ bảng con lấy mã bảo mật
-  function getSyncCode() {
-    return syncCode;
-  }
-
-  function sendStateToMini() {
-    if(miniWindow && !miniWindow.closed) {
-      miniWindow.postMessage({
-        action: 'SYNC',
-        steps: stepStates,
-        subs: subStates
-      }, '*');
-    }
   }
 </script>
 </body>

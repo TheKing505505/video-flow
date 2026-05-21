@@ -284,7 +284,7 @@
   let miniWindow = null;
   let currentVideoTitle = "";
 
-  // Reset mã cũ khi load lại trang
+  // Dọn dẹp bộ nhớ đệm
   localStorage.removeItem('vflow_sync_code');
 
   function updateVideoTitle(val) {
@@ -363,7 +363,7 @@
     if(miniWindow && !miniWindow.closed) { miniWindow.postMessage({ action: 'LOCK' }, '*'); }
   }
 
-  // Folder Watcher
+  // Thư mục watcher
   let dirHandle=null, watchInterval=null, knownFiles=new Set(), watching=false;
 
   async function selectFolder() {
@@ -412,20 +412,19 @@
     }
   }
 
-  // Đón nhận dữ liệu tương tác từ Màn hình phụ bắn ngược về
   window.addEventListener('message', function(e) {
     if (e.data.action === 'MINI_TOGGLE_STEP') { toggleStep(e.data.num); }
     if (e.data.action === 'MINI_TOGGLE_SUB') { toggleSub(e.data.id); }
     if (e.data.action === 'REQUEST_INITIAL_SYNC') { sendStateToMini(); }
   });
 
-  // Mở cửa sổ phụ an toàn
   function openMiniPanel() {
     const w = 420, h = 590;
     const left = (screen.width/2) - (w/2);
     const top = (screen.height/2) - (h/2);
     miniWindow = window.open("", "VideoFlowMiniPanel", `width=${w},height=${h},top=${top},left=${left},resizable=yes`);
     
+    // Gán mã HTML sạch vào biến và thực thi trực tiếp, triệt tiêu hoàn toàn lỗi hiển thị chuỗi dư
     const miniHTML = `
       <!DOCTYPE html>
       <html>
@@ -509,13 +508,13 @@
               document.getElementById('app').style.display = 'block';
               window.opener.postMessage({ action: 'REQUEST_INITIAL_SYNC' }, '*');
             } else {
-              alert('Mã kết nối không chính xác! Hãy kiểm tra hoặc tạo mã mới.');
+              alert('Mã kết nối không chính xác!');
             }
           }
 
           function callParentToggle(num) { window.opener.postMessage({ action: 'MINI_TOGGLE_STEP', num: num }, '*'); }
           function callParentSub(id) { window.opener.postMessage({ action: 'MINI_TOGGLE_SUB', id: id }, '*'); }
-        </script>
+        <\/script>
       </body>
       </html>
     `;

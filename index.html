@@ -82,19 +82,8 @@
     .btn-secondary:hover { background: var(--line); }
     .btn-danger { background: var(--red); color: #fff; border: none; }
 
-    .history-list {
-      max-height: 85px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
-      font-size: 0.8rem; color: var(--muted); margin-top: 4px;
-    }
-    .history-item {
-      display: flex; justify-content: space-between; background: var(--card2);
-      padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line);
-    }
-    .history-item .time { color: var(--green); font-weight: 600; }
-
     /* WORKSPACE CONTROL */
-    .workspace { display: flex; flex-direction: column; gap: 12px; opacity: 0.3; pointer-events: none; transition: opacity 0.3s; }
-    .workspace.active { opacity: 1; pointer-events: auto; }
+    .workspace { display: flex; flex-direction: column; gap: 12px; }
 
     /* FOLDER CARD */
     .folder-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
@@ -163,32 +152,14 @@
 <header>
   <div class="logo">Video<em>Flow</em> <span style="font-size:0.8rem; color:var(--yellow); font-weight:600; margin-left:12px;" id="active-video-title"></span></div>
   <div style="display:flex; align-items:center; gap:12px;">
-    <div id="time-elapsed" style="font-size:0.9rem; font-family:monospace; color:var(--purple); font-weight:700;">00:00</div>
     <button class="btn btn-secondary" onclick="resetAll()" style="padding: 5px 12px; font-size:0.75rem;">Reset Hệ Thống</button>
   </div>
 </header>
 
-<div class="mgmt-container">
-  <div class="panel-card" id="creation-box">
-    <div class="panel-title">🎦 Bước 1: Tạo Video Mới Đang Làm</div>
-    <div class="input-group">
-      <input type="text" id="new-video-name" class="input-txt" placeholder="Nhập tên video / tên dự án..." />
-      <button class="btn" id="btn-start-project" onclick="startNewVideo()">Kích hoạt</button>
-    </div>
-  </div>
-  
-  <div class="panel-card">
-    <div class="panel-title" style="color: var(--green);">🕒 Các Video Đã Tạo & Thời Gian Hoàn Thành</div>
-    <div class="history-list" id="history-list">
-      <div id="history-empty" style="text-align: center; padding-top: 12px; font-style: italic;">Chưa có video nào hoàn thành.</div>
-    </div>
-  </div>
-</div>
-
 <div class="workspace" id="workspace">
 
   <div class="folder-card">
-    <div class="panel-title" style="margin-bottom:8px; color:var(--yellow)">📁 Bước 2: Theo dõi thư mục lưu video tải về</div>
+    <div class="panel-title" style="margin-bottom:8px; color:var(--yellow)">📁 Theo dõi thư mục lưu video tải về</div>
     <div class="folder-row">
       <div class="folder-path" id="folder-path">Bấm nút bên phải để liên kết thư mục máy tính...</div>
       <button class="btn btn-secondary" onclick="selectFolder()" style="white-space:nowrap; padding: 7px 12px; font-size:0.78rem;">Chọn thư mục</button>
@@ -268,7 +239,6 @@
 
   <div class="done-banner" id="done-banner">
     <h2 style="color:var(--green); font-size:1.1rem; font-weight:800; margin-bottom:4px;">🎉 Tuyệt vời! Hoàn Thành Toàn Bộ Công Đoạn</h2>
-    <p style="font-size:0.8rem; color:var(--muted);">Thời gian hoàn thành đã được kết xuất vào mục lịch sử lưu trữ bên trên.</p>
   </div>
 </div>
 
@@ -285,9 +255,6 @@
 </div>
 
 <script>
-  let currentVideo = null;
-  let startTime = null;
-  let timerInterval = null;
   let syncCode = "";
   let miniWindow = null;
 
@@ -296,54 +263,14 @@
   
   let dirHandle = null, watchInterval = null, knownFiles = new Set(), watching = false;
 
-  function playTingSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const now = ctx.currentTime;
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = 'sine'; osc1.frequency.setValueAtTime(1400, now);
-      gain1.gain.setValueAtTime(0.25, now); gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-      osc1.connect(gain1); gain1.connect(ctx.destination);
-      osc1.start(now); osc1.stop(now + 0.3);
-    } catch(e) { console.error(e); }
-  }
-
-  function startNewVideo() {
-    const nameInput = document.getElementById('new-video-name');
-    const val = nameInput.value.trim();
-    if(!val) { alert("Vui lòng đặt tên dự án video lần này!"); return; }
-    
-    currentVideo = val;
-    document.getElementById('active-video-title').textContent = `👉 Đang xử lý: ${currentVideo}`;
-    document.getElementById('workspace').classList.add('active');
-    nameInput.disabled = true;
-    document.getElementById('btn-start-project').disabled = true;
-    
-    startTime = new Date();
-    clearInterval(timerInterval);
-    timerInterval = setInterval(updateTimer, 1000);
-  }
-
-  function updateTimer() {
-    if(!startTime) return;
-    const diff = Math.floor((new Date() - startTime) / 1000);
-    const mm = String(Math.floor(diff / 60)).padStart(2, '0');
-    const ss = String(diff % 60).padStart(2, '0');
-    const timeStr = `${mm}:${ss}`;
-    document.getElementById('time-elapsed').textContent = timeStr;
-    
-    if(miniWindow && !miniWindow.closed) {
-      try {
-        const miniTimer = miniWindow.document.getElementById('mini-timer');
-        if(miniTimer) miniTimer.textContent = timeStr;
-      } catch(e){}
-    }
-  }
+  // Khởi tạo/Xóa sạch mã cũ khi tải lại trang chính
+  localStorage.removeItem('vflow_sync_code');
 
   function generateCode() {
     syncCode = String(Math.floor(10000 + Math.random() * 90000));
     document.getElementById('code-box').textContent = syncCode;
+    // Lưu thẳng vào vùng nhớ dùng chung của trình duyệt để màn 2 đọc được công khai
+    localStorage.setItem('vflow_sync_code', syncCode);
   }
 
   function toggleStep(n) {
@@ -376,45 +303,17 @@
 
   function renderProgress() {
     const doneCount = Object.values(stepStates).filter(Boolean).length;
-    const isAllDone = (doneCount === 5);
-    document.getElementById('done-banner').classList.toggle('show', isAllDone);
-    
-    if (isAllDone && currentVideo) {
-      clearInterval(timerInterval);
-      const duration = document.getElementById('time-elapsed').textContent;
-      saveToHistory(currentVideo, duration);
-      currentVideo = null;
-    }
-  }
-
-  function saveToHistory(name, duration) {
-    const historyBox = document.getElementById('history-list');
-    const emptyMsg = document.getElementById('history-empty');
-    if(emptyMsg) emptyMsg.remove();
-    
-    const item = document.createElement('div');
-    item.className = 'history-item';
-    item.innerHTML = `<span>🎬 <b>${name}</b></span> <span class="time">⏱ Xong sau: ${duration}</span>`;
-    historyBox.prepend(item);
+    document.getElementById('done-banner').classList.toggle('show', doneCount === 5);
   }
 
   function resetAll() {
     for(let i=1;i<=5;i++){ stepStates[i]=false; const el=document.getElementById('s'+i); if(el) el.classList.remove('done'); }
     Object.keys(subStates).forEach(k=>{ subStates[k]=false; const el=document.getElementById(k); if(el) el.classList.remove('done'); });
     
-    clearInterval(timerInterval);
-    document.getElementById('time-elapsed').textContent = "00:00";
-    document.getElementById('active-video-title').textContent = "";
     document.getElementById('done-banner').classList.remove('show');
-    
-    const nameInput = document.getElementById('new-video-name');
-    nameInput.disabled = false;
-    nameInput.value = "";
-    document.getElementById('btn-start-project').disabled = false;
-    
     syncCode = "";
+    localStorage.removeItem('vflow_sync_code');
     document.getElementById('code-box').textContent = "-----";
-    document.getElementById('workspace').classList.remove('active');
     
     if(miniWindow && !miniWindow.closed) {
       miniWindow.postMessage({ action: 'LOCK' }, '*');
@@ -457,16 +356,14 @@
   }
 
   function triggerFileAlert(filename) {
-    let textAlert = "📥 Đã tải video gốc";
+    let textAlert = "📥 Phát hiện dữ liệu mới";
     if(filename.toLowerCase().includes('capcut') || filename.toLowerCase().includes('export')) {
-      textAlert = "✨ Đã edit xong video";
+      textAlert = "✨ Đã hoàn tất kết xuất Edit";
     }
     if(miniWindow && !miniWindow.closed) {
       miniWindow.postMessage({ action: 'SHOW_NOTIF', msg: textAlert, file: filename }, '*');
     }
   }
-
-  function getSyncCode() { return syncCode; }
 
   function sendStateToMini() {
     if(miniWindow && !miniWindow.closed) {
@@ -474,15 +371,16 @@
     }
   }
 
-  // Lắng nghe tín hiệu yêu cầu kiểm tra code từ Bảng Phụ Màn 2 gửi sang
+  // Nhận lệnh tương tác ngược từ màn hình phụ 2 điều khiển ngược lại màn 1
   window.addEventListener('message', function(e) {
-    if (e.data.action === 'REQUEST_AUTH') {
-      if (syncCode !== "" && e.data.code === syncCode) {
-        miniWindow.postMessage({ action: 'AUTH_SUCCESS' }, '*');
-        sendStateToMini();
-      } else {
-        miniWindow.postMessage({ action: 'AUTH_FAIL' }, '*');
-      }
+    if (e.data.action === 'MINI_TOGGLE_STEP') {
+      toggleStep(e.data.num);
+    }
+    if (e.data.action === 'MINI_TOGGLE_SUB') {
+      toggleSub(e.data.id);
+    }
+    if (e.data.action === 'REQUEST_INITIAL_SYNC') {
+      sendStateToMini();
     }
   });
 
@@ -519,25 +417,24 @@
       </head>
       <body>
         <div id="lock" class="lock-screen">
-          <h3 style="color:#fbbf24; margin-bottom:8px;">🔑 Nhập Mã Khóa Để Kết Nối</h3>
-          <p style="font-size:0.8rem; color:#606880; margin-bottom:20px;">Lấy mã 5 số được tạo từ màn hình chính</p>
+          <h3 style="color:#fbbf24; margin-bottom:8px;">🔑 Nhập Mã Khóa Kết Nối Màn 2</h3>
+          <p style="font-size:0.8rem; color:#606880; margin-bottom:20px;">Lấy mã số từ giao diện Màn hình chính</p>
           <input type="text" id="passcode" class="code-input" placeholder="00000" maxlength="5" />
           <button class="btn-join" onclick="checkAuth()">Xác Nhận Kích Hoạt</button>
         </div>
 
         <div id="app" class="main-app">
           <div class="top-bar">
-            <span style="font-weight:bold; color:#4f8ef7;">🖥 BẢNG PHỤ MINI (MÀN 2)</span>
-            <span id="mini-timer" style="font-family:monospace; color:#fbbf24; font-weight:bold;">00:00</span>
+            <span style="font-weight:bold; color:#4f8ef7;">🖥 BẢNG PHỤ ĐIỀU KHIỂN (MÀN 2)</span>
           </div>
-          <div class="card-item" id="m1"><span>01. Tìm kiếm video</span><div class="box-click" onclick="window.opener.toggleStep(1)"></div></div>
-          <div class="card-item" id="m2"><span>02. Tách dịch sub cứng</span><div class="box-click" onclick="window.opener.toggleStep(2)"></div></div>
-          <div class="card-item" id="m3"><span>03. Edit hậu kỳ CapCut</span><div class="box-click" onclick="window.opener.toggleStep(3)"></div></div>
-          <div class="card-item" id="m4"><span>04. Sửa Bug & Nhạc nền</span><div class="box-click" onclick="window.opener.toggleStep(4)"></div></div>
+          <div class="card-item" id="m1"><span>01. Tìm kiếm video</span><div class="box-click" onclick="callParentToggle(1)"></div></div>
+          <div class="card-item" id="m2"><span>02. Tách dịch sub cứng</span><div class="box-click" onclick="callParentToggle(2)"></div></div>
+          <div class="card-item" id="m3"><span>03. Edit hậu kỳ CapCut</span><div class="box-click" onclick="callParentToggle(3)"></div></div>
+          <div class="card-item" id="m4"><span>04. Sửa Bug & Nhạc nền</span><div class="box-click" onclick="callParentToggle(4)"></div></div>
           <div class="card-item" id="m5" style="margin-bottom:2px;"><span>05. Đăng tải đa nền tảng</span></div>
-          <div class="sub-item" id="ms-yt"><span>YouTube Shorts</span><div class="box-click" onclick="window.opener.toggleSub('sub-yt')"></div></div>
-          <div class="sub-item" id="ms-fb"><span>Facebook Reels</span><div class="box-click" onclick="window.opener.toggleSub('sub-fb')"></div></div>
-          <div class="sub-item" id="ms-tt"><span>TikTok Video</span><div class="box-click" onclick="window.opener.toggleSub('sub-tt')"></div></div>
+          <div class="sub-item" id="ms-yt"><span>YouTube Shorts</span><div class="box-click" onclick="callParentSub('sub-yt')"></div></div>
+          <div class="sub-item" id="ms-fb"><span>Facebook Reels</span><div class="box-click" onclick="callParentSub('sub-fb')"></div></div>
+          <div class="sub-item" id="ms-tt"><span>TikTok Video</span><div class="box-click" onclick="callParentSub('sub-tt')"></div></div>
           <div id="alertBox" class="popup-alert">
             <div id="alertMsg"></div>
             <div id="alertFile" style="font-size:0.7rem; font-weight:normal; margin-top:4px;"></div>
@@ -545,6 +442,7 @@
         </div>
 
         <script>
+          // Đồng bộ giao diện khi nhận lệnh từ màn hình 1 gửi sang
           window.addEventListener('message', function(e) {
             if(e.data.action === 'SYNC') {
               for(let i=1; i<=5; i++) { 
@@ -560,15 +458,7 @@
               document.getElementById('alertMsg').textContent = e.data.msg;
               document.getElementById('alertFile').textContent = e.data.file;
               ab.style.display = 'block'; 
-              window.opener.playTingSound();
               setTimeout(() => { ab.style.display = 'none'; }, 5000);
-            }
-            if(e.data.action === 'AUTH_SUCCESS') {
-              document.getElementById('lock').style.display = 'none';
-              document.getElementById('app').style.display = 'block';
-            }
-            if(e.data.action === 'AUTH_FAIL') {
-              alert('Mã kích hoạt không đúng hoặc chưa tạo mã mới!');
             }
             if(e.data.action === 'LOCK') {
               document.getElementById('lock').style.display = 'block';
@@ -577,11 +467,29 @@
             }
           });
 
+          // Hàm check mã trực tiếp lấy từ ổ đĩa chia sẻ chung của trình duyệt
           function checkAuth() {
             const inputVal = document.getElementById('passcode').value.trim();
-            window.opener.postMessage({ action: 'REQUEST_AUTH', code: inputVal }, '*');
+            const correctCode = localStorage.getItem('vflow_sync_code');
+
+            if(correctCode && inputVal === correctCode) {
+              document.getElementById('lock').style.display = 'none';
+              document.getElementById('app').style.display = 'block';
+              // Yêu cầu màn hình 1 gửi trạng thái checklist sang ngay lập tức
+              window.opener.postMessage({ action: 'REQUEST_INITIAL_SYNC' }, '*');
+            } else {
+              alert('Mã kích hoạt không đúng hoặc bạn chưa bấm tạo mã mới ở Màn hình chính!');
+            }
           }
-        <\/script>
+
+          function callParentToggle(num) {
+            window.opener.postMessage({ action: 'MINI_TOGGLE_STEP', num: num }, '*');
+          }
+
+          function callParentSub(id) {
+            window.opener.postMessage({ action: 'MINI_TOGGLE_SUB', id: id }, '*');
+          }
+        </script>
       </body>
       </html>
     `);

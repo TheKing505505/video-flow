@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VideoFlow Pro - Multi-Screen Workflow</title>
+  <title>VideoFlow Pro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -33,7 +33,7 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
       padding: 24px;
-      max-width: 850px;
+      max-width: 800px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -127,7 +127,6 @@
       background: color-mix(in srgb, var(--cc) 8%, transparent); color: var(--cc); cursor: pointer;
     }
 
-    /* Checkbox Right Alignment */
     .cb {
       width: 22px; height: 22px; flex-shrink: 0; border-radius: 6px; border: 1.5px solid var(--line2);
       background: var(--card2); display: flex; align-items: center; justify-content: center; cursor: pointer;
@@ -136,7 +135,7 @@
     .step-card.done .cb { background: var(--sc); border-color: var(--sc); }
     .step-card.done .cb svg { display: block; }
 
-    /* Sub-steps Layout */
+    /* Sub-steps */
     .subs { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; width: 100%; }
     .sub { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 6px; background: var(--card2); border: 1px solid var(--line); }
     .sub.done { border-color: color-mix(in srgb, var(--sc) 20%, var(--line)); }
@@ -148,7 +147,7 @@
     .sub.done .sub-cb { background: var(--sc); border-color: var(--sc); }
     .sub.done .sub-cb svg { display: block; }
 
-    /* FOOTER CODES */
+    /* CODES & FOOTER */
     .sync-footer {
       background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px;
       display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
@@ -275,7 +274,7 @@
 
 <div class="sync-footer">
   <div>
-    <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:2px;">🔌 Kết Nối Thiết Bị Hai Mân Hình (Màn Chính & Phụ)</h4>
+    <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:2px;">🔌 Kết Nối Thiết Bị Hai Màn Hình (Màn Chính & Phụ)</h4>
     <p style="font-size:0.75rem; color:var(--muted);">Tạo mã 5 số ngẫu nhiên để đồng bộ hóa trạng thái công việc sang Bảng Phụ Mini.</p>
   </div>
   <div style="display:flex; align-items:center; gap:12px;">
@@ -345,17 +344,18 @@
   function generateCode() {
     syncCode = String(Math.floor(10000 + Math.random() * 90000));
     document.getElementById('code-box').textContent = syncCode;
-    sendStateToMini();
   }
 
   function toggleStep(n) {
     stepStates[n] = !stepStates[n];
-    document.getElementById('s'+n).classList.toggle('done', stepStates[n]);
+    const el = document.getElementById('s'+n);
+    if(el) el.classList.toggle('done', stepStates[n]);
     if (n === 5) {
       const all = Object.values(subStates).every(Boolean);
       ['sub-yt','sub-fb','sub-tt'].forEach(k => {
         subStates[k] = !all;
-        document.getElementById(k).classList.toggle('done', !all);
+        const subEl = document.getElementById(k);
+        if(subEl) subEl.classList.toggle('done', !all);
       });
     }
     renderProgress();
@@ -364,10 +364,12 @@
 
   function toggleSub(id) {
     subStates[id] = !subStates[id];
-    document.getElementById(id).classList.toggle('done', subStates[id]);
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('done', subStates[id]);
     const all = Object.values(subStates).every(Boolean);
     stepStates[5] = all;
-    document.getElementById('s5').classList.toggle('done', all);
+    const s5El = document.getElementById('s5');
+    if(s5El) s5El.classList.toggle('done', all);
     renderProgress();
     sendStateToMini();
   }
@@ -414,7 +416,9 @@
     document.getElementById('code-box').textContent = "-----";
     document.getElementById('workspace').classList.remove('active');
     
-    sendStateToMini();
+    if(miniWindow && !miniWindow.closed) {
+      miniWindow.postMessage({ action: 'LOCK' }, '*');
+    }
   }
 
   async function selectFolder() {
@@ -470,6 +474,18 @@
     }
   }
 
+  // Lắng nghe tín hiệu yêu cầu kiểm tra code từ Bảng Phụ Màn 2 gửi sang
+  window.addEventListener('message', function(e) {
+    if (e.data.action === 'REQUEST_AUTH') {
+      if (syncCode !== "" && e.data.code === syncCode) {
+        miniWindow.postMessage({ action: 'AUTH_SUCCESS' }, '*');
+        sendStateToMini();
+      } else {
+        miniWindow.postMessage({ action: 'AUTH_FAIL' }, '*');
+      }
+    }
+  });
+
   function openMiniPanel() {
     const w = 430, h = 570;
     const left = (screen.width/2) - (w/2);
@@ -484,12 +500,12 @@
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>Bảng Phụ Mini</title>
+        <title>Bảng Phụ Màn 2</title>
         <style>
           body { background: #0c0f17; color: #dde2f0; font-family: sans-serif; padding: 14px; margin:0; }
-          .lock-screen { text-align:center; padding: 40px 10px; }
-          .code-input { width: 80%; padding: 10px; text-align: center; background: #161b26; border: 1px solid #2b354a; color: #fff; font-size: 1.3rem; border-radius: 6px; margin-bottom: 12px; }
-          .btn-join { background: #4f8ef7; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 85%; }
+          .lock-screen { text-align:center; padding: 60px 10px; }
+          .code-input { width: 80%; padding: 12px; text-align: center; background: #161b26; border: 1px solid #2b354a; color: #fff; font-size: 1.5rem; font-family: monospace; border-radius: 6px; margin-bottom: 16px; letter-spacing: 4px; }
+          .btn-join { background: #4f8ef7; color: #fff; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 85%; font-size: 0.95rem; }
           .main-app { display: none; }
           .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e2433; padding-bottom: 10px; margin-bottom: 12px; }
           .card-item { background: #121622; border: 1px solid #1e2433; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -503,13 +519,15 @@
       </head>
       <body>
         <div id="lock" class="lock-screen">
-          <h3>🔑 Nhập Mã 5 Số Để Đồng Bộ</h3>
-          <input type="text" id="passcode" class="code-input" maxlength="5" />
-          <button class="btn-join" onclick="checkAuth()">Xác Nhận Kết Nối</button>
+          <h3 style="color:#fbbf24; margin-bottom:8px;">🔑 Nhập Mã Khóa Để Kết Nối</h3>
+          <p style="font-size:0.8rem; color:#606880; margin-bottom:20px;">Lấy mã 5 số được tạo từ màn hình chính</p>
+          <input type="text" id="passcode" class="code-input" placeholder="00000" maxlength="5" />
+          <button class="btn-join" onclick="checkAuth()">Xác Nhận Kích Hoạt</button>
         </div>
+
         <div id="app" class="main-app">
           <div class="top-bar">
-            <span style="font-weight:bold; color:#4f8ef7;">🖥 BẢNG PHỤ MINI</span>
+            <span style="font-weight:bold; color:#4f8ef7;">🖥 BẢNG PHỤ MINI (MÀN 2)</span>
             <span id="mini-timer" style="font-family:monospace; color:#fbbf24; font-weight:bold;">00:00</span>
           </div>
           <div class="card-item" id="m1"><span>01. Tìm kiếm video</span><div class="box-click" onclick="window.opener.toggleStep(1)"></div></div>
@@ -525,10 +543,14 @@
             <div id="alertFile" style="font-size:0.7rem; font-weight:normal; margin-top:4px;"></div>
           </div>
         </div>
+
         <script>
           window.addEventListener('message', function(e) {
             if(e.data.action === 'SYNC') {
-              for(let i=1; i<=5; i++) { document.getElementById('m'+i)?.classList.toggle('done', e.data.steps[i]); }
+              for(let i=1; i<=5; i++) { 
+                const el = document.getElementById('m'+i);
+                if(el) el.classList.toggle('done', e.data.steps[i]); 
+              }
               document.getElementById('ms-yt').classList.toggle('done', e.data.subs['sub-yt']);
               document.getElementById('ms-fb').classList.toggle('done', e.data.subs['sub-fb']);
               document.getElementById('ms-tt').classList.toggle('done', e.data.subs['sub-tt']);
@@ -537,16 +559,27 @@
               const ab = document.getElementById('alertBox');
               document.getElementById('alertMsg').textContent = e.data.msg;
               document.getElementById('alertFile').textContent = e.data.file;
-              ab.style.display = 'block'; window.opener.playTingSound();
+              ab.style.display = 'block'; 
+              window.opener.playTingSound();
               setTimeout(() => { ab.style.display = 'none'; }, 5000);
             }
-          });
-          function checkAuth() {
-            if(document.getElementById('passcode').value.trim() === window.opener.getSyncCode()) {
+            if(e.data.action === 'AUTH_SUCCESS') {
               document.getElementById('lock').style.display = 'none';
               document.getElementById('app').style.display = 'block';
-              window.opener.sendStateToMini();
-            } else { alert('Mã sai!'); }
+            }
+            if(e.data.action === 'AUTH_FAIL') {
+              alert('Mã kích hoạt không đúng hoặc chưa tạo mã mới!');
+            }
+            if(e.data.action === 'LOCK') {
+              document.getElementById('lock').style.display = 'block';
+              document.getElementById('app').style.display = 'none';
+              document.getElementById('passcode').value = '';
+            }
+          });
+
+          function checkAuth() {
+            const inputVal = document.getElementById('passcode').value.trim();
+            window.opener.postMessage({ action: 'REQUEST_AUTH', code: inputVal }, '*');
           }
         <\/script>
       </body>

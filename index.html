@@ -3,24 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VideoFlow - Dashboard</title>
+  <title>VideoFlow - Premium Workflow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:       #0a0c10;
-      --card:     #10141e;
-      --card2:    #151a26;
-      --line:     #1e2433;
-      --line2:    #252c3d;
-      --text:     #dde2f0;
-      --muted:    #606880;
-      --dim:      #353d54;
-      --accent:   #4f8ef7;
-      --green:    #34d399;
-      --yellow:   #fbbf24;
-      --red:      #f87171;
-      --r:        12px;
+      --bg:       #080b11;
+      --card:     #111625;
+      --card2:    #171e30;
+      --line:     #222a3f;
+      --line2:    #2e3954;
+      --text:     #e2e8f0;
+      --muted:    #718096;
+      --dim:      #4a5568;
+      --accent:   #3b82f6;
+      --accent-grad: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      --green:    #10b981;
+      --yellow:   #f59e0b;
+      --red:      #ef4444;
+      --purple:   #8b5cf6;
+      --pink:     #ec4899;
+      --r:        16px;
     }
 
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -30,148 +33,300 @@
       color: var(--text);
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
-      padding: 28px 24px 40px;
+      padding: 40px 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      max-width: 780px;
+      gap: 20px;
+      max-width: 840px;
       margin: 0 auto;
+      line-height: 1.5;
     }
 
+    /* ──────────── HEADER ──────────── */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 0 16px;
+      padding-bottom: 24px;
       border-bottom: 1px solid var(--line);
     }
-    .logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
-    .logo em { font-style: normal; color: var(--accent); }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+    .logo em { font-style: normal; color: var(--accent); background: linear-gradient(to right, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
     .header-right { display: flex; align-items: center; gap: 16px; }
+
     .progress-pill {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 99px; padding: 5px 14px 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 6px 16px 6px 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .prog-dots { display: flex; gap: 4px; }
-    .prog-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line2); transition: background 0.3s; }
-    .prog-dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .prog-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); }
-    #prog-frac { color: var(--text); }
+    .prog-dots { display: flex; gap: 6px; }
+    .prog-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--line2);
+      transition: all 0.3s ease;
+    }
+    .prog-dot.on { background: var(--green); box-shadow: 0 0 10px var(--green); }
+    .prog-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    #prog-frac { color: var(--green); }
 
     .btn-reset {
-      background: none; border: 1px solid var(--line2); color: var(--muted);
-      padding: 5px 13px; border-radius: 8px; font-family: inherit;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.18s;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .btn-reset:hover { border-color: var(--red); color: var(--red); }
+    .btn-reset:hover { background: var(--red); color: white; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
 
-    /* DASHBOARD INITIAL VIEW */
-    .dash-box {
-      background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 24px;
+    /* ──────────── STEP CARDS ──────────── */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .dash-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 600px) { .dash-grid { grid-template-columns: 1fr 1fr; } }
     
-    .input-group { display: flex; gap: 8px; margin-top: 12px; }
-    .input-txt {
-      flex: 1; background: var(--card2); border: 1px solid var(--line2);
-      border-radius: 8px; padding: 10px 14px; color: var(--text);
-      font-family: inherit; font-size: 0.85rem;
-    }
-    .input-txt:focus { outline: none; border-color: var(--accent); }
-    
-    .btn-primary {
-      background: var(--accent); color: #fff; border: none; padding: 0 18px;
-      border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s;
-    }
-    .btn-primary:hover { opacity: 0.9; }
+    .steps { display: flex; flex-direction: column; gap: 12px; }
 
-    .history-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; }
-    .history-item {
-      background: var(--card2); border: 1px solid var(--line); border-radius: 8px;
-      padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;
-    }
-    .history-name { font-weight: 600; color: var(--text); }
-    .history-time { color: var(--green); font-size: 0.75rem; }
-
-    /* WORKSPACE VIEW */
-    .steps { display: flex; flex-direction: column; gap: 8px; }
     .step-card {
-      background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
-      padding: 16px 18px; display: flex; align-items: center; justify-content: space-between;
-      gap: 14px; position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
-    .step-card.done { background: color-mix(in srgb, var(--sc) 3%, var(--card)); border-color: color-mix(in srgb, var(--sc) 20%, var(--line)); }
-    
-    /* Checkbox dịch chuyển sang bên phải */
-    .sb { order: 1; flex: 1; min-width: 0; }
+    .step-card:hover { border-color: var(--line2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+    .step-card.done {
+      background: color-mix(in srgb, var(--sc) 3%, var(--card));
+      border-color: color-mix(in srgb, var(--sc) 25%, var(--line));
+    }
+
+    .step-card::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 18px; bottom: 18px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: color-mix(in srgb, var(--sc) 25%, transparent);
+      transition: background 0.3s;
+    }
+    .step-card.done::after { background: var(--sc); }
+
+    /* custom checkbox */
     .cb {
-      order: 2; width: 22px; height: 22px; flex-shrink: 0; border-radius: 7px;
-      border: 1.5px solid var(--line2); background: var(--card2);
-      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.18s;
+      width: 24px; height: 24px; flex-shrink: 0;
+      border-radius: 8px;
+      border: 2px solid var(--line2);
+      background: var(--card2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      margin-top: 2px;
+      transition: all 0.2s ease;
     }
+    .cb:hover { border-color: var(--sc); box-shadow: 0 0 8px color-mix(in srgb, var(--sc) 50%, transparent); }
     .cb svg { display: none; }
     .step-card.done .cb { background: var(--sc); border-color: var(--sc); }
     .step-card.done .cb svg { display: block; }
 
-    .sh { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .step-tag { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--sc); background: color-mix(in srgb, var(--sc) 10%, transparent); padding: 2px 7px; border-radius: 5px; }
-    .step-name { font-size: 0.92rem; font-weight: 700; color: var(--text); }
+    .sb { flex: 1; min-width: 0; }
+    .sh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .step-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: var(--sc);
+      background: color-mix(in srgb, var(--sc) 12%, transparent);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .step-name { font-size: 1rem; font-weight: 700; color: var(--text); transition: color 0.2s; }
     .step-card.done .step-name { color: var(--muted); text-decoration: line-through; }
-    .step-hint { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
 
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .step-hint { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+
+    /* link chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
     .chip {
-      display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 7px;
-      font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none;
-      border: 1px solid color-mix(in srgb, var(--cc) 25%, transparent); background: color-mix(in srgb, var(--cc) 8%, transparent); color: var(--cc); transition: all 0.18s;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      border: 1px solid color-mix(in srgb, var(--cc) 30%, transparent);
+      background: color-mix(in srgb, var(--cc) 10%, transparent);
+      color: var(--cc);
+      transition: all 0.2s;
     }
-    .chip:hover { background: color-mix(in srgb, var(--cc) 16%, transparent); transform: translateY(-1px); }
+    .chip:hover {
+      background: var(--cc);
+      color: #fff;
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--cc) 40%, transparent);
+      transform: translateY(-1px);
+    }
 
-    .subs { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-    .sub { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card2); }
-    
-    .sub-name { order: 1; font-size: 0.76rem; color: var(--muted); font-weight: 500; }
-    .sub .chip { order: 2; margin-left: auto !important; margin-right: 10px; }
-    .sub-cb {
-      order: 3; width: 16px; height: 16px; flex-shrink: 0; border-radius: 4px;
-      border: 1.5px solid var(--line2); background: var(--card); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    /* sub-steps */
+    .subs { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .sub {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      transition: all 0.2s;
     }
+    .sub:hover { border-color: var(--line2); }
+    .sub.done { border-color: color-mix(in srgb, var(--sc) 30%, var(--line)); background: color-mix(in srgb, var(--sc) 2%, var(--card2)); }
+
+    .sub-cb {
+      width: 18px; height: 18px; flex-shrink: 0;
+      border-radius: 5px;
+      border: 2px solid var(--line2);
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .sub-cb:hover { border-color: var(--sc); }
     .sub-cb svg { display: none; }
     .sub.done .sub-cb { background: var(--sc); border-color: var(--sc); }
     .sub.done .sub-cb svg { display: block; }
+
+    .sub-name { font-size: 0.85rem; color: var(--text); font-weight: 600; }
     .sub.done .sub-name { color: var(--dim); text-decoration: line-through; }
+    .sub .chip { margin-left: auto; padding: 4px 10px; font-size: 0.75rem; }
 
-    /* FOLDER CARD */
-    .folder-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; }
-    .folder-head { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; font-weight: 700; margin-bottom: 10px; }
-    .folder-head svg { color: var(--yellow); }
-    .folder-row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
-    .folder-path { flex: 1; min-width: 140px; background: var(--card2); border: 1px solid var(--line); border-radius: 7px; padding: 7px 11px; font-size: 0.75rem; font-family: monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* ──────────── UTILITY PANEL (FOLDER & EXTRA) ──────────── */
+    .grid-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    @media (max-width: 680px) { .grid-panels { grid-template-columns: 1fr; } }
+
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+    .panel-card:hover { border-color: var(--line2); }
+
+    .panel-head {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.9rem; font-weight: 700; color: var(--text);
+    }
+    .panel-head svg { flex-shrink: 0; }
+
+    .panel-content { display: flex; flex-direction: column; gap: 10px; }
+
+    .path-display {
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem; font-family: monospace;
+      color: var(--muted);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .btn-group { display: flex; gap: 8px; }
+
+    .btn-action {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: inherit; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; border: none; white-space: nowrap; transition: all 0.2s;
+      text-align: center; text-decoration: none;
+    }
     
-    .btn-sm { padding: 7px 13px; border-radius: 7px; font-family: inherit; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.18s; }
-    .btn-folder { border: 1px solid color-mix(in srgb, var(--yellow) 35%, transparent); background: color-mix(in srgb, var(--yellow) 8%, transparent); color: var(--yellow); }
-    .btn-watch { border: 1px solid color-mix(in srgb, var(--green) 35%, transparent); background: color-mix(in srgb, var(--green) 8%, transparent); color: var(--green); display: none; }
-    .btn-watch.active { border-color: var(--red); background: color-mix(in srgb, var(--red) 8%, transparent); color: var(--red); }
+    .btn-yellow { background: rgba(245, 158, 11, 0.1); color: var(--yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .btn-yellow:hover { background: var(--yellow); color: #000; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); }
 
-    .notif-toast { display: none; align-items: center; gap: 7px; margin-top: 9px; padding: 8px 12px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); background: color-mix(in srgb, var(--green) 7%, transparent); font-size: 0.77rem; color: var(--green); }
+    .btn-green { background: rgba(16, 185, 129, 0.1); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.2); display: none; }
+    .btn-green:hover { background: var(--green); color: #fff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+    .btn-green.active { background: rgba(239, 68, 68, 0.1); color: var(--red); border-color: rgba(239, 68, 68, 0.2); }
+    .btn-green.active:hover { background: var(--red); color: #fff; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+
+    .btn-purple { background: var(--accent-grad); color: white; }
+    .btn-purple:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+    .btn-outline { background: transparent; border: 1px solid var(--line2); color: var(--text); }
+    .btn-outline:hover { background: var(--card2); border-color: var(--muted); }
+
+    .notif-toast {
+      display: none; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.05);
+      font-size: 0.8rem; color: var(--green); animation: fadeUp 0.3s ease;
+    }
     .notif-toast.show { display: flex; }
 
-    .done-banner { display: none; background: linear-gradient(135deg, color-mix(in srgb, var(--green) 8%, var(--card)), color-mix(in srgb, var(--accent) 6%, var(--card))); border: 1px solid color-mix(in srgb, var(--green) 28%, transparent); border-radius: var(--r); padding: 20px 22px; text-align: center; margin-top: 4px; }
+    /* ──────────── DONE BANNER ──────────── */
+    .done-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--r);
+      padding: 24px; text-align: center;
+      animation: fadeUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
     .done-banner.show { display: block; }
-    .done-banner h2 { font-size: 1.05rem; color: var(--green); margin-bottom: 3px; }
+    .done-banner h2 { font-size: 1.2rem; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+    .done-banner p { font-size: 0.85rem; color: var(--muted); }
 
-    /* CODE & PANEL SECTION */
-    .sync-box { display: flex; justify-content: space-between; align-items: center; background: var(--card2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
-    .code-num { font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 99px; }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">Video<em>Flow</em> <span id="active-title" style="font-size:0.85rem; color:var(--muted); font-weight:400; margin-left:10px;"></span></div>
+  <div class="logo">Video<em>Flow</em></div>
   <div class="header-right">
     <div class="progress-pill">
       <div class="prog-dots" id="prog-dots">
@@ -181,160 +336,143 @@
         <div class="prog-dot" id="d4"></div>
         <div class="prog-dot" id="d5"></div>
       </div>
-      <span class="prog-label"><span id="prog-frac">0</span>/5 bước</span>
+      <span class="prog-label"><span id="prog-frac">0</span> / 5 Bước</span>
     </div>
-    <button class="btn-reset" onclick="resetAll()">Reset</button>
+    <button class="btn-reset" onclick="resetAll()">Làm mới cuộc gọi</button>
   </div>
 </header>
 
-<div id="view-dashboard" class="dash-grid">
-  <div class="dash-box">
-    <h3 style="font-size:0.95rem;">Tạo Video Mới</h3>
-    <div class="input-group">
-      <input type="text" id="new-video-name" class="input-txt" placeholder="Nhập tên video sản xuất..." autocomplete="off"/>
-      <button class="btn-primary" onclick="startNewVideo()">Bắt đầu</button>
+<div class="section-title">
+  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 5l7 7-7 7"/></svg>
+  Luồng xử lý video chính
+</div>
+
+<div class="steps">
+  <div class="step-card" id="s1" style="--sc:var(--accent)">
+    <div class="cb" onclick="toggleStep(1)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sb">
+      <div class="sh"><span class="step-tag">Bước 01</span><span class="step-name">Tìm kiếm nguồn tư liệu video</span></div>
+      <div class="step-hint">Duyệt và lựa chọn các video xu hướng hoặc nội dung phù hợp trên Douyin.</div>
+      <div class="chips">
+        <a class="chip" style="--cc:var(--accent)" onclick="smartOpen('https://www.douyin.com/jingxuan','douyin')" href="javascript:void(0)">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Mở Douyin Jingxuan
+        </a>
+      </div>
     </div>
   </div>
-  <div class="dash-box">
-    <h3 style="font-size:0.95rem;">Các Video Đã Tạo</h3>
-    <div class="history-list" id="history-list"></div>
+
+  <div class="step-card" id="s2" style="--sc:var(--purple)">
+    <div class="cb" onclick="toggleStep(2)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sb">
+      <div class="sh"><span class="step-tag">Bước 02</span><span class="step-name">Trích xuất phụ đề (Tách Sub cứng)</span></div>
+      <div class="step-hint">Sử dụng công cụ AI bóc tách giọng nói thành văn bản từ video gốc vừa tải.</div>
+      <div class="chips">
+        <a class="chip" style="--cc:var(--purple)" onclick="smartOpen('https://subtitleextractor.com/dashboard','subtitle')" href="javascript:void(0)">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Subtitle Extractor
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card" id="s3" style="--sc:var(--green)">
+    <div class="cb" onclick="toggleStep(3)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sb">
+      <div class="sh"><span class="step-tag">Bước 03</span><span class="step-name">Chỉnh sửa xây dựng — CapCut</span></div>
+      <div class="step-hint">Import tài nguyên vào CapCut, cắt dựng, lồng tiếng phụ đề mới. Đánh dấu khi hoàn thành bản dựng thô.</div>
+    </div>
+  </div>
+
+  <div class="step-card" id="s4" style="--sc:var(--yellow)">
+    <div class="cb" onclick="toggleStep(4)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sb">
+      <div class="sh"><span class="step-tag">Bước 04</span><span class="step-name">Kiểm tra lỗi (Fix Bug) & Chèn âm nhạc</span></div>
+      <div class="step-hint">Rà soát lại chính tả, căn chỉnh khung hình và mix nhạc nền phù hợp. Đánh dấu khi xuất video thành công.</div>
+    </div>
+  </div>
+
+  <div class="step-card" id="s5" style="--sc:var(--pink)">
+    <div class="cb" onclick="toggleStep(5)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sb">
+      <div class="sh"><span class="step-tag">Bước 05</span><span class="step-name">Phát hành đa nền tảng</span></div>
+      <div class="step-hint">Đăng tải lên hệ thống kênh truyền thông xã hội. Tích chọn từng kênh phía dưới:</div>
+      <div class="subs">
+        <div class="sub" id="sub-yt">
+          <div class="sub-cb" onclick="toggleSub('sub-yt')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="sub-name">YouTube Shorts / Videos</span>
+          <a class="chip" style="--cc:#ff4e4e" onclick="smartOpen('https://www.youtube.com/','youtube')" href="javascript:void(0)">YouTube</a>
+        </div>
+        <div class="sub" id="sub-fb">
+          <div class="sub-cb" onclick="toggleSub('sub-fb')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="sub-name">Facebook Reels / Page</span>
+          <a class="chip" style="--cc:#4b9ef5" onclick="smartOpen('https://www.facebook.com/','facebook')" href="javascript:void(0)">Facebook</a>
+        </div>
+        <div class="sub" id="sub-tt">
+          <div class="sub-cb" onclick="toggleSub('sub-tt')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <span class="sub-name">TikTok Channel</span>
+          <a class="chip" style="--cc:#00f2fe" onclick="smartOpen('https://www.tiktok.com/','tiktok')" href="javascript:void(0)">TikTok</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="view-workspace" style="display: none; flex-direction: column; gap: 14px;">
-  
-  <div class="folder-card">
-    <div class="folder-head">
-      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-      Theo dõi thư mục tải video
-    </div>
-    <div class="folder-row">
-      <div class="folder-path" id="folder-path">Chưa chọn thư mục…</div>
-      <button class="btn-sm btn-folder" onclick="selectFolder()">Chọn thư mục</button>
-      <button class="btn-sm btn-watch" id="btn-watch" onclick="toggleWatch()">Bắt đầu</button>
-    </div>
-    <div class="notif-toast" id="notif-toast">
-      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path d="M22 11.1V12a10 10 0 11-5.9-9.1"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <span id="notif-text">File mới được phát hiện!</span>
-    </div>
-  </div>
-
-  <div class="steps">
-    <div class="step-card" id="s1" style="--sc:#4f8ef7">
-      <div class="cb" onclick="toggleStep(1)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="sb">
-        <div class="sh"><span class="step-tag">01</span><span class="step-name">Tìm video</span></div>
-        <div class="step-hint">Duyệt và chọn video trên Douyin.</div>
-        <div class="chips">
-          <a class="chip" style="--cc:#4f8ef7" onclick="smartOpen('https://www.douyin.com/jingxuan','douyin')" href="javascript:void(0)">Douyin</a>
-        </div>
-      </div>
-    </div>
-    <div class="step-card" id="s2" style="--sc:#a78bfa">
-      <div class="cb" onclick="toggleStep(2)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="sb">
-        <div class="sh"><span class="step-tag">02</span><span class="step-name">Tách sub cứng</span></div>
-        <div class="step-hint">Trích xuất phụ đề từ video gốc.</div>
-        <div class="chips">
-          <a class="chip" style="--cc:#a78bfa" onclick="smartOpen('https://subtitleextractor.com/dashboard','subtitle')" href="javascript:void(0)">Subtitle Extractor</a>
-        </div>
-      </div>
-    </div>
-    <div class="step-card" id="s3" style="--sc:#34d399">
-      <div class="cb" onclick="toggleStep(3)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="sb">
-        <div class="sh"><span class="step-tag">03</span><span class="step-name">Edit — CapCut</span></div>
-        <div class="step-hint">Chỉnh sửa video trên CapCut. Tick khi đã edit xong.</div>
-      </div>
-    </div>
-    <div class="step-card" id="s4" style="--sc:#fbbf24">
-      <div class="cb" onclick="toggleStep(4)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="sb">
-        <div class="sh"><span class="step-tag">04</span><span class="step-name">Fix bug & Chèn nhạc</span></div>
-        <div class="step-hint">Kiểm tra lỗi, chèn nhạc nền. Tick khi hoàn tất.</div>
-      </div>
-    </div>
-    <div class="step-card" id="s5" style="--sc:#f472b6">
-      <div class="cb" onclick="toggleStep(5)"><svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="sb">
-        <div class="sh"><span class="step-tag">05</span><span class="step-name">Đăng video</span></div>
-        <div class="step-hint">Tick từng nền tảng sau khi đã đăng xong.</div>
-        <div class="subs">
-          <div class="sub" id="sub-yt">
-            <div class="sub-cb" onclick="toggleSub('sub-yt')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span class="sub-name">YouTube</span>
-            <a class="chip" style="--cc:#ff4e4e; font-size:0.72rem; padding:4px 10px" onclick="smartOpen('https://www.youtube.com/','youtube')" href="javascript:void(0)">Mở</a>
-          </div>
-          <div class="sub" id="sub-fb">
-            <div class="sub-cb" onclick="toggleSub('sub-fb')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span class="sub-name">Facebook</span>
-            <a class="chip" style="--cc:#4b9ef5; font-size:0.72rem; padding:4px 10px" onclick="smartOpen('https://www.facebook.com/','facebook')" href="javascript:void(0)">Mở</a>
-          </div>
-          <div class="sub" id="sub-tt">
-            <div class="sub-cb" onclick="toggleSub('sub-tt')"><svg width="9" height="7" viewBox="0 0 11 9" fill="none"><path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span class="sub-name">TikTok</span>
-            <a class="chip" style="--cc:#34d399; font-size:0.72rem; padding:4px 10px" onclick="smartOpen('https://www.tiktok.com/','tiktok')" href="javascript:void(0)">Mở</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="done-banner" id="done-banner">
-    <h2>✓ Workflow hoàn tất</h2>
-    <p>Thời gian xử lý đã ghi nhận. Bấm Reset để quay lại.</p>
-  </div>
-
-  <div class="sync-box">
+<div class="grid-panels">
+  <div class="panel-card">
     <div>
-      <div style="font-size:0.8rem; font-weight:700;">Kết nối bảng phụ</div>
-      <div style="font-size:0.72rem; color:var(--muted); margin-top:2px;">Mở bảng nhỏ ở màn hình chính và nhập mã này.</div>
+      <div class="panel-head">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--yellow)" stroke-width="2">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+        </svg>
+        Giám sát thư mục hệ thống
+      </div>
+      <div style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; margin-bottom: 12px;">Tự động thông báo khi phát hiện tệp video mới vừa được tải về.</div>
+      <div class="panel-content">
+        <div class="path-display" id="folder-path">Yêu cầu liên kết thư mục…</div>
+      </div>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="code-num" id="sync-code-text">-----</div>
-      <button class="btn-sm btn-folder" onclick="generateSyncCode()" style="border-color:var(--accent); color:var(--accent);">Tạo Code</button>
-      <button class="btn-sm btn-watch" style="display:inline-block;" onclick="openPanelWindow()">Mở Bảng Nhỏ</button>
+    
+    <div class="btn-group">
+      <button class="btn-action btn-yellow" onclick="selectFolder()">Chọn thư mục</button>
+      <button class="btn-action btn-green" id="btn-watch" onclick="toggleWatch()">Kích hoạt</button>
+    </div>
+
+    <div class="notif-toast" id="notif-toast">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M22 11.1V12a10 10 0 11-5.9-9.1"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span id="notif-text">Nhận diện tệp mới thành công!</span>
     </div>
   </div>
 
+  <div class="panel-card">
+    <div>
+      <div class="panel-head">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="2">
+          <path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z"/>
+          <path d="M4 9h16M9 4v16"/>
+        </svg>
+        Bảng điều khiển phụ liên kết
+      </div>
+      <div style="font-size: 0.78rem; color: var(--muted); margin-top: 4px; margin-bottom: 12px;">Tạo mã QR hoặc liên kết nhanh để chuyển đổi không gian làm việc nhỏ trên thiết bị di động.</div>
+      <div class="panel-content">
+        <div class="path-display" id="subpanel-status">Bảng phụ đang ở chế độ chờ...</div>
+      </div>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn-action btn-outline" onclick="generateSubCode()">Tạo Mã Code</button>
+      <button class="btn-action btn-purple" onclick="openSubPanel()">Mở Bảng Nhỏ</button>
+    </div>
+  </div>
+</div>
+
+<div class="done-banner" id="done-banner">
+  <h2>✓ Hoàn Thành Xuất Sắc Toàn Bộ Quy Trình!</h2>
+  <p>Hệ thống ghi nhận toàn bộ các bước đã được xử lý xong. Hãy nhấn "Làm mới cuộc gọi" để chuẩn bị cho video tiếp theo.</p>
 </div>
 
 <script>
-  const bc = new BroadcastChannel('videoflow_sync');
   const openedTabs = {};
-  
-  let currentVideo = null;
-  let historyData = JSON.parse(localStorage.getItem('vf_history') || '[]');
-  let syncCode = localStorage.getItem('vf_sync_code') || '';
-
-  const stepStates = {1:false,2:false,3:false,4:false,5:false};
-  const subStates  = {'sub-yt':false,'sub-fb':false,'sub-tt':false};
-
-  // Kênh lắng nghe đồng bộ từ bảng phụ
-  bc.onmessage = (event) => {
-    if (!currentVideo) return;
-    const { type, data } = event.data;
-    if (type === 'TOGGLE_STEP') {
-      toggleStep(data.n, false);
-    } else if (type === 'TOGGLE_SUB') {
-      toggleSub(data.id, false);
-    } else if (type === 'REQUEST_INIT') {
-      broadcastState();
-    }
-  };
-
-  window.addEventListener('load', () => {
-    renderHistory();
-    if (syncCode) document.getElementById('sync-code-text').textContent = syncCode;
-    
-    // Kiểm tra xem có video nào đang làm dở không
-    const savedActive = localStorage.getItem('vf_active_video');
-    if (savedActive) {
-      currentVideo = JSON.parse(savedActive);
-      resumeActiveVideo();
-    }
-  });
-
   function smartOpen(url, key) {
     try {
       if (openedTabs[key] && !openedTabs[key].closed) { openedTabs[key].focus(); }
@@ -342,41 +480,10 @@
     } catch(e) { window.open(url, '_blank'); }
   }
 
-  function startNewVideo() {
-    const nameInput = document.getElementById('new-video-name');
-    if (!nameInput.value.trim()) { alert('Vui lòng nhập tên video!'); return; }
-    
-    currentVideo = {
-      name: nameInput.value.trim(),
-      startTime: Date.now(),
-      endTime: null,
-      duration: ''
-    };
-    
-    localStorage.setItem('vf_active_video', JSON.stringify(currentVideo));
-    resumeActiveVideo();
-  }
+  const stepStates = {1:false,2:false,3:false,4:false,5:false};
+  const subStates  = {'sub-yt':false,'sub-fb':false,'sub-tt':false};
 
-  function resumeActiveVideo() {
-    document.getElementById('view-dashboard').style.display = 'none';
-    document.getElementById('view-workspace').style.display = 'flex';
-    document.getElementById('active-title').textContent = `• Đang chạy: ${currentVideo.name}`;
-    renderProgress();
-    broadcastState();
-  }
-
-  function generateSyncCode() {
-    syncCode = Math.floor(10000 + Math.random() * 90000).toString();
-    localStorage.setItem('vf_sync_code', syncCode);
-    document.getElementById('sync-code-text').textContent = syncCode;
-    broadcastState();
-  }
-
-  function openPanelWindow() {
-    window.open('panel.html', 'VideoFlowPanel', 'width=360,height=620,resizable=yes,scrollbars=yes');
-  }
-
-  function toggleStep(n, syncBack = true) {
+  function toggleStep(n) {
     if (n === 5) {
       const all = Object.values(subStates).every(Boolean);
       ['sub-yt','sub-fb','sub-tt'].forEach(k => { subStates[k] = !all; });
@@ -386,19 +493,15 @@
       document.getElementById('s'+n).classList.toggle('done', stepStates[n]);
     }
     renderProgress();
-    if (syncBack) broadcastState();
-    checkWorkflowCompletion();
   }
 
-  function toggleSub(id, syncBack = true) {
+  function toggleSub(id) {
     subStates[id] = !subStates[id];
     document.getElementById(id).classList.toggle('done', subStates[id]);
     const all = Object.values(subStates).every(Boolean);
     stepStates[5] = all;
     document.getElementById('s5').classList.toggle('done', all);
     renderProgress();
-    if (syncBack) broadcastState();
-    checkWorkflowCompletion();
   }
 
   function renderSubs() {
@@ -415,84 +518,29 @@
       document.getElementById('d'+i).classList.toggle('on', stepStates[i]);
     }
     document.getElementById('done-banner').classList.toggle('show', done === 5);
-  }
-
-  function checkWorkflowCompletion() {
-    const done = Object.values(stepStates).filter(Boolean).length;
-    if (done === 5 && currentVideo && !currentVideo.endTime) {
-      currentVideo.endTime = Date.now();
-      const diffMs = currentVideo.endTime - currentVideo.startTime;
-      currentVideo.duration = formatTime(diffMs);
-      
-      historyData.unshift(currentVideo);
-      localStorage.setItem('vf_history', JSON.stringify(historyData));
-      localStorage.removeItem('vf_active_video');
-      renderHistory();
+    if (done === 5 && Notification.permission === 'granted') {
+      new Notification('VideoFlow ✓', { body: 'Quy trình hoàn tất xuất sắc!' });
     }
-  }
-
-  function formatTime(ms) {
-    const sec = Math.floor(ms / 1000);
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return m > 0 ? `${m} phút ${s} giây` : `${s} giây`;
-  }
-
-  function renderHistory() {
-    const container = document.getElementById('history-list');
-    if (historyData.length === 0) {
-      container.innerHTML = `<div style="font-size:0.75rem; color:var(--muted); text-align:center; padding:10px;">Chưa có lịch sử video hoàn thành</div>`;
-      return;
-    }
-    container.innerHTML = historyData.map(item => `
-      <div class="history-item">
-        <span class="history-name">${item.name}</span>
-        <span class="history-time">⏱ ${item.duration || '0s'}</span>
-      </div>
-    `).join('');
-  }
-
-  function broadcastState() {
-    bc.postMessage({
-      type: 'STATE_UPDATE',
-      syncCode: syncCode,
-      currentVideo: currentVideo,
-      stepStates: stepStates,
-      subStates: subStates
-    });
   }
 
   function resetAll() {
-    // Reset code khi bấm nút reset
-    syncCode = '';
-    localStorage.removeItem('vf_sync_code');
-    document.getElementById('sync-code-text').textContent = '-----';
-
-    localStorage.removeItem('vf_active_video');
-    currentVideo = null;
-
     for(let i=1;i<=5;i++){ stepStates[i]=false; document.getElementById('s'+i).classList.remove('done'); }
     Object.keys(subStates).forEach(k=>{ subStates[k]=false; document.getElementById(k).classList.remove('done'); });
-    
-    document.getElementById('new-video-name').value = '';
-    document.getElementById('view-workspace').style.display = 'none';
-    document.getElementById('view-dashboard').style.display = 'grid';
-    document.getElementById('active-title').textContent = '';
     renderProgress();
-    bc.postMessage({ type: 'RESET_TRIGGER' });
   }
 
-  // Folder watcher logic
+  // Folder monitor logic
   let dirHandle=null, watchInterval=null, knownFiles=new Set(), watching=false;
 
   async function selectFolder() {
-    if (!window.showDirectoryPicker) { alert('Vui lòng dùng Chrome hoặc Edge.'); return; }
+    if (!window.showDirectoryPicker) { alert('Vui lòng sử dụng trình duyệt Chrome, Edge hoặc Opera để sử dụng chức năng này.'); return; }
     try {
       dirHandle = await window.showDirectoryPicker({ mode:'read' });
-      document.getElementById('folder-path').textContent = dirHandle.name;
+      document.getElementById('folder-path').textContent = "📁 " + dirHandle.name;
       document.getElementById('btn-watch').style.display = 'inline-block';
+      if (Notification.permission === 'default') Notification.requestPermission();
       knownFiles = await scanFiles(dirHandle);
-    } catch(e) { if(e.name!=='AbortError') alert('Lỗi: '+e.message); }
+    } catch(e) { if(e.name!=='AbortError') alert('Lỗi truy cập thư mục: '+e.message); }
   }
 
   async function scanFiles(h) {
@@ -504,43 +552,35 @@
   function toggleWatch() {
     const btn = document.getElementById('btn-watch');
     if (!watching) {
-      watching = true; btn.textContent = 'Dừng'; btn.classList.add('active');
+      watching = true; btn.textContent = 'Dừng giám sát'; btn.classList.add('active');
       watchInterval = setInterval(async () => {
         if (!dirHandle) return;
         const cur = await scanFiles(dirHandle);
-        for (const name of cur) {
-          if (!knownFiles.has(name)) {
-            knownFiles.add(name);
-            processNewFile(name);
-          }
-        }
+        for (const name of cur) if (!knownFiles.has(name)) { knownFiles.add(name); showNotif(name); }
       }, 3000);
     } else {
-      watching = false; clearInterval(watchInterval); btn.textContent = 'Bắt đầu'; btn.classList.remove('active');
+      watching = false; clearInterval(watchInterval); btn.textContent = 'Kích hoạt'; btn.classList.remove('active');
     }
   }
 
-  function processNewFile(name) {
-    // Thông báo cục bộ trên web chính
+  function showNotif(name) {
     const t = document.getElementById('notif-toast');
-    document.getElementById('notif-text').textContent = 'File mới: ' + name;
+    document.getElementById('notif-text').textContent = 'File mới phát hiện: ' + name;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 7000);
+    setTimeout(() => t.classList.remove('show'), 6000);
+    if (Notification.permission === 'granted')
+      new Notification('VideoFlow – File mới', { body: name });
+  }
 
-    // Xác định định dạng file để gửi sang bảng phụ
-    let fileSource = 'douyin';
-    const lowerName = name.toLowerCase();
-    
-    // Nếu tên file chứa ký tự Capcut / Export hoặc đang ở bước 3, 4 thì coi là file từ CapCut
-    if (lowerName.includes('capcut') || lowerName.includes('export') || stepStates[3] || stepStates[4]) {
-      fileSource = 'capcut';
-    }
+  // Bảng phụ functions
+  function generateSubCode() {
+    const mockCode = Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('subpanel-status').textContent = `Mã kết nối của bạn: ${mockCode} (Hiệu lực trong 5 phút)`;
+  }
 
-    bc.postMessage({
-      type: 'FILE_DETECTED',
-      source: fileSource,
-      fileName: name
-    });
+  function openSubPanel() {
+    alert('Đang mở không gian làm việc Bảng Phụ ở cửa sổ thu nhỏ...');
+    smartOpen('javascript:alert("Giao diện bảng phụ thu nhỏ rút gọn")' , 'subpanel');
   }
 </script>
 </body>

@@ -429,8 +429,7 @@
         <div class="step-title">Tìm video</div>
         <div class="step-hint">Duyệt và chọn video trending trên Douyin.</div>
         <div class="actions">
-          <a class="btn" style="--cc:#6fa0f8"
-             onclick="go('https://www.douyin.com/jingxuan','dy')" href="javascript:void(0)">
+          <a class="btn" style="--cc:#6fa0f8" href="https://www.douyin.com/jingxuan" target="tab_douyin">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -450,8 +449,7 @@
         <div class="step-title">Tách sub cứng</div>
         <div class="step-hint">Trích xuất phụ đề từ video gốc.</div>
         <div class="actions">
-          <a class="btn" style="--cc:#b09cfb"
-             onclick="go('https://subtitleextractor.com/dashboard','sub')" href="javascript:void(0)">
+          <a class="btn" style="--cc:#b09cfb" href="https://subtitleextractor.com/dashboard" target="tab_subextractor">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -469,22 +467,19 @@
             Dịch sub
           </div>
           <div class="ai-btns">
-            <a class="btn" style="--cc:#7baef8"
-               onclick="go('https://gemini.google.com/app','gemini')" href="javascript:void(0)">
+            <a class="btn" style="--cc:#7baef8" href="https://gemini.google.com/app" target="tab_gemini">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/>
               </svg>
               Gemini
             </a>
-            <a class="btn" style="--cc:#d4956a"
-               onclick="go('https://claude.ai/new','claude')" href="javascript:void(0)">
+            <a class="btn" style="--cc:#d4956a" href="https://claude.ai/new" target="tab_claude">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M12 3c-1 5-4.8 7-9 9 4.2 2 8 4 9 9 1-5 4.8-7 9-9-4.2-2-8-4-9-9z"/>
               </svg>
               Claude
             </a>
-            <a class="btn" style="--cc:#4cba80"
-               onclick="go('https://chatgpt.com/','gpt')" href="javascript:void(0)">
+            <a class="btn" style="--cc:#4cba80" href="https://chatgpt.com/" target="tab_chatgpt">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.2 10a7.9 7.9 0 00-.8-5.1A8.1 8.1 0 005.1 6.8 6 6 0 001.8 11a6 6 0 00.7 4.4 7.9 7.9 0 00.8 5.1A8.1 8.1 0 0018.9 17.2 6 6 0 0022.2 13a6 6 0 00-.1-3zm-9.7 8.7l-1.4-.8 1.8-3h-3.6L11 12.2l2-3.4 1.4.8-1.8 3H16l-1.7 2.7-1.8 3.4z"/>
               </svg>
@@ -538,8 +533,7 @@
               <div class="plat-name">YouTube</div>
               <div class="plat-sub">youtube.com</div>
             </div>
-            <a class="btn" style="--cc:#f06060; font-size:0.68rem; padding:5px 12px; margin-left:auto"
-               onclick="go('https://www.youtube.com/','yt')" href="javascript:void(0)">Mở →</a>
+            <a class="btn" style="--cc:#f06060; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.youtube.com/" target="tab_youtube">Mở →</a>
           </div>
 
           <div class="plat-row">
@@ -552,8 +546,7 @@
               <div class="plat-name">Facebook</div>
               <div class="plat-sub">facebook.com</div>
             </div>
-            <a class="btn" style="--cc:#5b95f0; font-size:0.68rem; padding:5px 12px; margin-left:auto"
-               onclick="go('https://www.facebook.com/','fb')" href="javascript:void(0)">Mở →</a>
+            <a class="btn" style="--cc:#5b95f0; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.facebook.com/" target="tab_facebook">Mở →</a>
           </div>
 
           <div class="plat-row">
@@ -566,8 +559,7 @@
               <div class="plat-name">TikTok</div>
               <div class="plat-sub">tiktok.com</div>
             </div>
-            <a class="btn" style="--cc:#27d294; font-size:0.68rem; padding:5px 12px; margin-left:auto"
-               onclick="go('https://www.tiktok.com/','tt')" href="javascript:void(0)">Mở →</a>
+            <a class="btn" style="--cc:#27d294; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.tiktok.com/" target="tab_tiktok">Mở →</a>
           </div>
 
         </div>
@@ -575,25 +567,5 @@
     </div>
 
   </div></div>
-
-<script>
-const tabs = {};
-function go(url, key) {
-  // Nếu tab với key này đã từng được mở và chưa bị đóng hoàn toàn
-  if (tabs[key] && !tabs[key].closed) {
-    // Gọi focus sang tab cũ
-    tabs[key].focus();
-    
-    // Đòn quyết định chống chặn bảo mật của trình duyệt bên thứ 3:
-    // Mở đè một cửa sổ rỗng trùng tên định danh (key) để ép trình duyệt phải đưa mắt người dùng về tab đó,
-    // nhưng thay thế URL bằng 'about:blank' tạm thời rồi trả về ngay lập tức để KHÔNG bị tải lại trang gốc (no-reload)
-    const w = window.open('', key);
-    if (w) w.focus();
-  } else {
-    // Nếu chưa mở bao giờ: Tiến hành mở tab mới bình thường và lưu tham chiếu tên tab
-    tabs[key] = window.open(url, key);
-  }
-}
-</script>
 </body>
 </html>

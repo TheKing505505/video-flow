@@ -577,26 +577,21 @@
   </div></div>
 
 <script>
-// Khởi tạo kênh lắng nghe tín hiệu Focus ngầm giữa các tab
-const channel = new BroadcastChannel('videoflow_tabs');
-channel.onmessage = (e) => {
-  if (e.data.action === 'focus' && window.name === e.data.key) {
-    // Khi nhận tín hiệu trùng khớp tên định danh, tab này tự kích hoạt hiển thị lên màn hình
-    window.focus();
-  }
-};
-
-const openTabs = {};
+const tabs = {};
 function go(url, key) {
-  // Gửi lệnh ngầm tới tab cũ yêu cầu tự Focus nếu nó đang mở
-  channel.postMessage({ action: 'focus', key: key });
-
-  if (!openTabs[key] || openTabs[key].closed) {
-    // Lần đầu: Mở tab mới bình thường
-    openTabs[key] = window.open(url, key);
+  // Nếu tab với key này đã từng được mở và chưa bị đóng hoàn toàn
+  if (tabs[key] && !tabs[key].closed) {
+    // Gọi focus sang tab cũ
+    tabs[key].focus();
+    
+    // Đòn quyết định chống chặn bảo mật của trình duyệt bên thứ 3:
+    // Mở đè một cửa sổ rỗng trùng tên định danh (key) để ép trình duyệt phải đưa mắt người dùng về tab đó,
+    // nhưng thay thế URL bằng 'about:blank' tạm thời rồi trả về ngay lập tức để KHÔNG bị tải lại trang gốc (no-reload)
+    const w = window.open('', key);
+    if (w) w.focus();
   } else {
-    // Lần sau: Chỉ gọi focus biến tham chiếu (hỗ trợ các dòng trình duyệt cho phép)
-    openTabs[key].focus();
+    // Nếu chưa mở bao giờ: Tiến hành mở tab mới bình thường và lưu tham chiếu tên tab
+    tabs[key] = window.open(url, key);
   }
 }
 </script>

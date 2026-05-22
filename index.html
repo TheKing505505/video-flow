@@ -429,7 +429,8 @@
         <div class="step-title">Tìm video</div>
         <div class="step-hint">Duyệt và chọn video trending trên Douyin.</div>
         <div class="actions">
-          <a class="btn" style="--cc:#6fa0f8" href="https://www.douyin.com/jingxuan" target="window_dy">
+          <a class="btn" style="--cc:#6fa0f8"
+             onclick="go('https://www.douyin.com/jingxuan','dy')" href="javascript:void(0)">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -449,7 +450,8 @@
         <div class="step-title">Tách sub cứng</div>
         <div class="step-hint">Trích xuất phụ đề từ video gốc.</div>
         <div class="actions">
-          <a class="btn" style="--cc:#b09cfb" href="https://subtitleextractor.com/dashboard" target="window_sub">
+          <a class="btn" style="--cc:#b09cfb"
+             onclick="go('https://subtitleextractor.com/dashboard','sub')" href="javascript:void(0)">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
               <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -467,19 +469,22 @@
             Dịch sub
           </div>
           <div class="ai-btns">
-            <a class="btn" style="--cc:#7baef8" href="https://gemini.google.com/app" target="window_gemini">
+            <a class="btn" style="--cc:#7baef8"
+               onclick="go('https://gemini.google.com/app','gemini')" href="javascript:void(0)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/>
               </svg>
               Gemini
             </a>
-            <a class="btn" style="--cc:#d4956a" href="https://claude.ai/new" target="window_claude">
+            <a class="btn" style="--cc:#d4956a"
+               onclick="go('https://claude.ai/new','claude')" href="javascript:void(0)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M12 3c-1 5-4.8 7-9 9 4.2 2 8 4 9 9 1-5 4.8-7 9-9-4.2-2-8-4-9-9z"/>
               </svg>
               Claude
             </a>
-            <a class="btn" style="--cc:#4cba80" href="https://chatgpt.com/" target="window_gpt">
+            <a class="btn" style="--cc:#4cba80"
+               onclick="go('https://chatgpt.com/','gpt')" href="javascript:void(0)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.2 10a7.9 7.9 0 00-.8-5.1A8.1 8.1 0 005.1 6.8 6 6 0 001.8 11a6 6 0 00.7 4.4 7.9 7.9 0 00.8 5.1A8.1 8.1 0 0018.9 17.2 6 6 0 0022.2 13a6 6 0 00-.1-3zm-9.7 8.7l-1.4-.8 1.8-3h-3.6L11 12.2l2-3.4 1.4.8-1.8 3H16l-1.7 2.7-1.8 3.4z"/>
               </svg>
@@ -533,7 +538,8 @@
               <div class="plat-name">YouTube</div>
               <div class="plat-sub">youtube.com</div>
             </div>
-            <a class="btn" style="--cc:#f06060; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.youtube.com/" target="window_yt">Mở →</a>
+            <a class="btn" style="--cc:#f06060; font-size:0.68rem; padding:5px 12px; margin-left:auto"
+               onclick="go('https://www.youtube.com/','yt')" href="javascript:void(0)">Mở →</a>
           </div>
 
           <div class="plat-row">
@@ -546,7 +552,8 @@
               <div class="plat-name">Facebook</div>
               <div class="plat-sub">facebook.com</div>
             </div>
-            <a class="btn" style="--cc:#5b95f0; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.facebook.com/" target="window_fb">Mở →</a>
+            <a class="btn" style="--cc:#5b95f0; font-size:0.68rem; padding:5px 12px; margin-left:auto"
+               onclick="go('https://www.facebook.com/','fb')" href="javascript:void(0)">Mở →</a>
           </div>
 
           <div class="plat-row">
@@ -559,7 +566,8 @@
               <div class="plat-name">TikTok</div>
               <div class="plat-sub">tiktok.com</div>
             </div>
-            <a class="btn" style="--cc:#27d294; font-size:0.68rem; padding:5px 12px; margin-left:auto" href="https://www.tiktok.com/" target="window_tt">Mở →</a>
+            <a class="btn" style="--cc:#27d294; font-size:0.68rem; padding:5px 12px; margin-left:auto"
+               onclick="go('https://www.tiktok.com/','tt')" href="javascript:void(0)">Mở →</a>
           </div>
 
         </div>
@@ -567,5 +575,30 @@
     </div>
 
   </div></div>
+
+<script>
+// Khởi tạo kênh lắng nghe tín hiệu Focus ngầm giữa các tab
+const channel = new BroadcastChannel('videoflow_tabs');
+channel.onmessage = (e) => {
+  if (e.data.action === 'focus' && window.name === e.data.key) {
+    // Khi nhận tín hiệu trùng khớp tên định danh, tab này tự kích hoạt hiển thị lên màn hình
+    window.focus();
+  }
+};
+
+const openTabs = {};
+function go(url, key) {
+  // Gửi lệnh ngầm tới tab cũ yêu cầu tự Focus nếu nó đang mở
+  channel.postMessage({ action: 'focus', key: key });
+
+  if (!openTabs[key] || openTabs[key].closed) {
+    // Lần đầu: Mở tab mới bình thường
+    openTabs[key] = window.open(url, key);
+  } else {
+    // Lần sau: Chỉ gọi focus biến tham chiếu (hỗ trợ các dòng trình duyệt cho phép)
+    openTabs[key].focus();
+  }
+}
+</script>
 </body>
 </html>
